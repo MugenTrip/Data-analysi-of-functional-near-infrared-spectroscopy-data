@@ -5,3 +5,4 @@ scipy
 scikit-learn
 mne
 mne_nirs
+path

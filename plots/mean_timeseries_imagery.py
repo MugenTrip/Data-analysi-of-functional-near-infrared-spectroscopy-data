@@ -1,3 +1,8 @@
+import os
+import sys
+import path
+directory = path.Path(__file__).abspath()
+sys.path.append(directory.parent.parent)
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import sem
@@ -18,7 +23,7 @@ for i,patient in enumerate(healthy):
 
 healthy_normalized_mean = np.mean(healthy_normalized, axis=0)
 healthy_mean = np.mean(healthy, axis=0)
-figure, axis = plt.subplots(4, 1, figsize=(17, 8))
+figure, axis = plt.subplots(4, 1, figsize=(17, 9))
 axis[0].set_title("Suplementery Motor Area")
 axis[1].set_title("Frontal Area")
 axis[2].set_title("Motor Area")
@@ -55,7 +60,7 @@ for i,patient in enumerate(healthy):
 
 healthy_normalized_mean = np.mean(healthy_normalized, axis=0)
 healthy_mean = np.mean(healthy, axis=0)
-figure, axis = plt.subplots(4, 1, figsize=(17, 8))
+figure, axis = plt.subplots(4, 1, figsize=(17, 9))
 axis[0].set_title("Suplementery Motor Area")
 axis[1].set_title("Frontal Area")
 axis[2].set_title("Motor Area")
@@ -91,7 +96,7 @@ for i,patient in enumerate(healthy):
 
 healthy_normalized_mean = np.mean(healthy_normalized, axis=0)
 healthy_mean = np.mean(healthy, axis=0)
-figure, axis = plt.subplots(4, 1, figsize=(17, 8))
+figure, axis = plt.subplots(4, 1, figsize=(17, 9))
 axis[0].set_title("Suplementery Motor Area")
 axis[1].set_title("Frontal Area")
 axis[2].set_title("Motor Area")
@@ -128,7 +133,7 @@ for i,patient in enumerate(healthy):
 
 healthy_normalized_mean = np.mean(healthy_normalized, axis=0)
 healthy_mean = np.mean(healthy, axis=0)
-figure, axis = plt.subplots(4, 1, figsize=(17, 8))
+figure, axis = plt.subplots(4, 1, figsize=(17, 9))
 axis[0].set_title("Suplementery Motor Area")
 axis[1].set_title("Frontal Area")
 axis[2].set_title("Motor Area")

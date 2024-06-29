@@ -1,3 +1,8 @@
+import os
+import sys
+import path
+directory = path.Path(__file__).abspath()
+sys.path.append(directory.parent.parent)
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import sem
@@ -25,7 +30,7 @@ for i,patient in enumerate(doc):
 
 healthy_normalized_mean = np.mean(healthy_normalized, axis=0)
 # healthy_mean = np.mean(healthy, axis=0)
-figure, axis = plt.subplots(4, 1)
+figure, axis = plt.subplots(4, 1, figsize=(20, 9))
 figure.suptitle("Average principal components over all healthy controls and standard error of the mean. The red line is the average PC if we have applied normalization first.")
 axis[0].set_title("Suplementery Motor Area")
 axis[1].set_title("Frontal Area")
@@ -38,6 +43,7 @@ for id, _ in enumerate(healthy_normalized_mean):
         axis[id//2].fill_between(np.arange(LEN_HEALTHY_ICU), healthy_normalized_mean[id], healthy_normalized_mean[id] - sem(healthy_normalized[:,id,:], axis = 0, ddof = 0),color='gray', alpha=0.2)        
         p7, = axis[id//2].plot(np.arange(LEN_HEALTHY_ICU), healthy_normalized_mean[id+1],color='red')
         axis[id//2].fill_between(np.arange(LEN_HEALTHY_ICU), healthy_normalized_mean[id+1], healthy_normalized_mean[id+1] - sem(healthy_normalized[:,id+1,:], axis = 0, ddof = 0),color='gray', alpha=0.2)        
+        axis[id//2].set_ylim([-0.6, 0.6])
         for idx in range(24):
             aggrated_time_of_event = idx*(153+142) + (idx // 8) * 336 # Every 15 sec 
             tmp = axis[id//2].axvline(x = aggrated_time_of_event, color = 'y')
@@ -47,6 +53,6 @@ for id, _ in enumerate(healthy_normalized_mean):
 
         
         l = axis[id//2].legend([tuple(p2), tuple(p3), p6, p7], 
-                               ['Physical Trigger', 'Rest Trigger', f"Channel {id}", f"Channel {id+1}"], handler_map={tuple: HandlerTuple(ndivide=None)}, loc='right')
+                               ['Physical Trigger', 'Rest Trigger', f"Channel {id+1}", f"Channel {id+2}"], handler_map={tuple: HandlerTuple(ndivide=None)}, loc='right')
 figure.tight_layout()  # otherwise the right y-label is slightly clipped
 plt.show()

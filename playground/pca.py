@@ -3,7 +3,11 @@
 Created on Sun Apr  2 14:35:45 2023
 @author: Mohak Sharda
 """
-
+import os
+import sys
+import path
+directory = path.Path(__file__).abspath()
+sys.path.append(directory.parent.parent)
 import numpy as np
 
 class PCA:

@@ -1,3 +1,8 @@
+import os
+import sys
+import path
+directory = path.Path(__file__).abspath()
+sys.path.append(directory.parent.parent)
 import numpy as np
 from DataPath import DataPath
 from sklearn.preprocessing import StandardScaler

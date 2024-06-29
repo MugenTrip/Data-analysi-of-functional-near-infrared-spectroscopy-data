@@ -14,7 +14,7 @@ from scipy.stats import pearsonr
 class DataLoader():
     """
     """
-    def __init__(self, data_path: str, event_path: str, isDoc: bool=False, plot: bool=False, isPCA: bool=True) -> None:
+    def __init__(self, data_path: str, event_path: str, isDoc: bool=False, plot: bool=False, isPCA: bool=True, isNormalize: bool=True) -> None:
         """
         """
         if (data_path == "" or data_path is None) or (event_path == "" or event_path is None):
@@ -27,10 +27,10 @@ class DataLoader():
         self.pca_data = None
         self.plot = plot
         self.isPCA = isPCA
+        self.isNormalize = isNormalize
         if self.isPCA:
             self.load_pca_data()
         else:
-            print("No")
             for patient_id, patient in enumerate(self.data):
                 scaler = StandardScaler()
                 patient = scaler.fit_transform(patient.T).T
@@ -38,7 +38,10 @@ class DataLoader():
                     self.pca_data = np.expand_dims(patient,axis=0)
                 else:
                     self.pca_data = np.concatenate((self.pca_data, np.expand_dims(patient,axis=0)), axis=0)
-                #self.pca_data = self.data
+                
+                # This will overdide the per channel normalization
+                if not isNormalize:
+                    self.pca_data = self.data
 
     def sum_cor(self, data, patient, area):
         cor = 0
@@ -63,23 +66,23 @@ class DataLoader():
                 pca = PCA(n_components=1)
                 data = patient[2*area:2*area+2,:]
                 
-                # In of very big power difference, we assume that one channels is noisy.
-                power_1 = np.sum(np.abs(data[0])**2)
-                power_2 = np.sum(np.abs(data[1])**2)
-                if power_1 / power_2 >= 9 or power_1 / power_2 <= 0.11112:
-                    print(f"----------------------Area: {area}------------------------------")
-                    print(f"Power:      {power_1} VS {power_2}")
-                    # To Find the noisy channel, we compare their correlation with the rest of the channels
-                    cor1 = self.sum_cor(data[0], patient, area)
-                    cor2 = self.sum_cor(data[1], patient, area)
-                    print(f"Correlation:      {cor1} VS {cor2}")
-                    if cor1 >= cor2:
-                        tmp_data = np.expand_dims(data[0], axis=0)
-                    else:
-                        tmp_data = np.expand_dims(data[1], axis=0)
-                    print(f"----------------------------------------------------------------")
-                else:
-                    tmp_data = data
+                # In very big power difference, we assume that one channels is noisy.
+                # power_1 = np.sum(np.abs(data[0])**2)
+                # power_2 = np.sum(np.abs(data[1])**2)
+                # if power_1 / power_2 >= 9 or power_1 / power_2 <= 0.11112:
+                #     print(f"----------------------Area: {area}------------------------------")
+                #     print(f"Power:      {power_1} VS {power_2}")
+                #     # To Find the noisy channel, we compare their correlation with the rest of the channels
+                #     cor1 = self.sum_cor(data[0], patient, area)
+                #     cor2 = self.sum_cor(data[1], patient, area)
+                #     print(f"Correlation:      {cor1} VS {cor2}")
+                #     if cor1 >= cor2:
+                #         tmp_data = np.expand_dims(data[0], axis=0)
+                #     else:
+                #         tmp_data = np.expand_dims(data[1], axis=0)
+                #     print(f"----------------------------------------------------------------")
+                # else:
+                tmp_data = data
                                     
                 # Apply PCA
                 pca.fit(tmp_data.T)
@@ -114,8 +117,9 @@ class DataLoader():
             if self.plot:
                 plt.show()
             
-            scaler = StandardScaler()
-            pca_data = scaler.fit_transform(pca_data.T).T
+            if  self.isNormalize:
+                scaler = StandardScaler()
+                pca_data = scaler.fit_transform(pca_data.T).T
 
             if patient_id == 0: 
                 self.pca_data = np.expand_dims(pca_data, axis=0)
@@ -188,7 +192,6 @@ class DataLoader():
                 patient_features_rest = np.concatenate((patient_features_rest, np.expand_dims(event_features_rest, axis=0)), axis=0)
 
         return patient_features_imagery - patient_features_rest
-
 
     def getFeaturesImageryNoPCATtest(self, feature_window: int= 53, channels: list=[0,1,2,3]):
         start = 0

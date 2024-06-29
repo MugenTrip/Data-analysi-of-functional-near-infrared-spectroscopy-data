@@ -1,4 +1,9 @@
+import os
+import sys
+import path
 import scipy.stats as stats 
+directory = path.Path(__file__).abspath()
+sys.path.append(directory.parent.parent)
 from DataLoader import DataLoader
 
 hc_path = "L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\ICUPatients\\data_followup"

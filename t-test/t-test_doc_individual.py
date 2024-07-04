@@ -8,7 +8,7 @@ from DataLoader import DataLoader
 import numpy as np
 import argparse
 
-doc_path = os.path.join(os.path.curdir, 'data\doc')
+doc_path = os.path.join(os.path.curdir, '..\data\doc')
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--session", type=str, choices=["initial", "followup"], help="Session, could be initial or followup.", required=True)
 args = parser.parse_args()

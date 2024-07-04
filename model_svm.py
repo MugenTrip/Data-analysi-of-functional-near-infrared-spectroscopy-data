@@ -6,18 +6,26 @@ from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
 class model_SVM():
-    """"""
+    """
+    Classification model. It contains an SVM with a linear kernel and a StandardScaler.
+    """
     def __init__(self, percentile: float=15) -> None:
         self.sc = StandardScaler()
         self.svm_clf = svm.SVC(kernel='linear') # Linear Kernel
 
     def predict(self, data: np.ndarray):
+        """
+        Make a new prediction.
+        """
         # Standardize
         data = self.sc.transform(data)
         # make predictions
         return self.svm_clf.predict(data)
          
     def train(self, training_data: np.ndarray, training_labels: np.ndarray):
+        """
+        Train model.
+        """
         # Standardize
         training_data = self.sc.fit_transform(training_data)
         # train the model
@@ -26,6 +34,9 @@ class model_SVM():
 
 
     def train_validate(self, training_data: np.ndarray, training_labels: np.ndarray, validation_data: np.ndarray, validation_labels: np.ndarray):
+        """
+        Train and validate model in the specified datasets.
+        """
         # Standardize
         training_data = self.sc.fit_transform(training_data)
         validation_data = self.sc.transform(validation_data)

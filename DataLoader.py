@@ -13,9 +13,18 @@ from scipy.stats import pearsonr
 
 class DataLoader():
     """
+    Class to extract the features and prepare the classes for the classificaton task.
     """
     def __init__(self, data_path: str, event_path: str, isDoc: bool=False, plot: bool=False, isPCA: bool=True, isNormalize: bool=True) -> None:
         """
+        Initialiaze the class
+            Args:
+            data_path (str):        Path of the data.npy file. Use run_preprocess.py to create it.
+            event_path (int):       Path of the events.npy file. Use run_preprocess.py to create it.
+            isDoc (bool):           True is you need the features for a DOC patient. Default (false)
+            plot (bool):            True is you want to get plots. Default (false)
+            isPCA (bool):           True is you want to apply PCA and reduce the channels/features. Default (true)
+            isNormalize (bool):     True is you want per channel normalization. Default (true)
         """
         if (data_path == "" or data_path is None) or (event_path == "" or event_path is None):
             print("Specify the path of the raw data and the events.")
@@ -43,15 +52,11 @@ class DataLoader():
                 if not isNormalize:
                     self.pca_data = self.data
 
-    def sum_cor(self, data, patient, area):
-        cor = 0
-        for id, test_data in enumerate(patient):
-            if (id != 2*area) and (id != 2*area + 1):
-                cor_tmp, _ = pearsonr(data, test_data)
-                cor = cor + cor_tmp 
-        return cor
 
     def load_pca_data(self): 
+        '''
+        Apply PCA in each symmetric left-right channel to obtain only one for each area.
+        ''' 
         for patient_id, patient in enumerate(self.data):
             # Initiate some plot variables
             if self.plot:
@@ -66,22 +71,6 @@ class DataLoader():
                 pca = PCA(n_components=1)
                 data = patient[2*area:2*area+2,:]
                 
-                # In very big power difference, we assume that one channels is noisy.
-                # power_1 = np.sum(np.abs(data[0])**2)
-                # power_2 = np.sum(np.abs(data[1])**2)
-                # if power_1 / power_2 >= 9 or power_1 / power_2 <= 0.11112:
-                #     print(f"----------------------Area: {area}------------------------------")
-                #     print(f"Power:      {power_1} VS {power_2}")
-                #     # To Find the noisy channel, we compare their correlation with the rest of the channels
-                #     cor1 = self.sum_cor(data[0], patient, area)
-                #     cor2 = self.sum_cor(data[1], patient, area)
-                #     print(f"Correlation:      {cor1} VS {cor2}")
-                #     if cor1 >= cor2:
-                #         tmp_data = np.expand_dims(data[0], axis=0)
-                #     else:
-                #         tmp_data = np.expand_dims(data[1], axis=0)
-                #     print(f"----------------------------------------------------------------")
-                # else:
                 tmp_data = data
                                     
                 # Apply PCA
@@ -138,6 +127,9 @@ class DataLoader():
             return self.getFeaturesNormal(feature_window, channels) # patients X channels X features
         
     def getFeaturesImagery(self, feature_window: int= 53, channels: list=[0,1,2,3]):
+        '''
+        Get all the data-points and labels for the imagery task.
+        '''
         start = 0
         duration = 153
         end = 306
@@ -166,6 +158,9 @@ class DataLoader():
         return patient_features[:,channels,:], np.expand_dims(np.array(labels), axis=1)
     
     def getFeaturesImageryNoPCA(self, feature_window: int= 53, channels: list=[0,1,2,3]):
+        '''
+        Similar to getFeaturesImagery, but it does not revert half of the datapoints. It was used for plots.
+        '''
         start = 0
         duration = 153
         end = 306
@@ -194,6 +189,9 @@ class DataLoader():
         return patient_features_imagery - patient_features_rest
 
     def getFeaturesImageryNoPCATtest(self, feature_window: int= 53, channels: list=[0,1,2,3]):
+        '''
+        Similar to getFeaturesImageryNoPCA, but it does not pair the featutes. It was used for the t-test.
+        '''
         start = 0
         duration = 153
         end = 306
@@ -222,6 +220,9 @@ class DataLoader():
         return patient_features_imagery , patient_features_rest
 
     def getFeaturesNoPCA(self, feature_window: int= 53, channels: list=[0,1,2,3]):
+        '''
+        Get the features of the PHYSICAL task, separetely for the stimuli and the rest periods. It was used fot t-test.
+        '''
         start = 0
         duration = 153
         end = 306
@@ -230,6 +231,9 @@ class DataLoader():
         return features_physical, features_rest
 
     def getFeaturesNormal(self, feature_window: int= 53, channels: list=[0,1,2,3]):
+        '''
+        Get the paired features and the labels for the PHYSICAL task.
+        '''
         start = 0
         duration = 153
         end = 306
@@ -244,6 +248,9 @@ class DataLoader():
         return self.features[:,channels,:], np.expand_dims(np.array(labels), axis=1)
     
     def getFeaturesDoc(self, feature_window: int= 53, channels: list=[0,1,2,3]):
+        '''
+        Get the paired features and the labels for the DOC patients.
+        '''
         start = 0
         duration = 153
         end = 295
@@ -269,6 +276,9 @@ class DataLoader():
         return patient_features[:,:,channels,:], np.expand_dims(np.array(labels), axis=1)
 
     def extractFeatures(self, start, stop, feature_window: int= 53):
+        '''
+        Method used to extract the mean and the slope for non DOC participants. You can add more featutes in the tuple if you want.
+        '''
         # For the slope we need to do this for every patient seperately
         for id, patient in enumerate(self.pca_data):
             if id == 0:
@@ -285,6 +295,9 @@ class DataLoader():
                     )
     
     def extractFeaturesDoC(self, data, start, stop, feature_window: int= 53):
+        '''
+        Method used to extract the mean and the slope for DOC participants. You can add more featutes in the tuple if you want.
+        '''
         # For the slope we need to do this for every patient seperately
         slope = np.expand_dims(self.slopePerChannel(data[:,start:stop]), axis=0)
         return np.concatenate(
@@ -298,75 +311,8 @@ class DataLoader():
     
     def slopePerChannel(self, data):
         '''
+        Calculate the slope for each channel of the data array.
         data: n_channels X samples
         '''
         # Calculate slope for each event for each channel: events X channels X 1 (slope)
         return np.polyfit(np.arange(data.T.shape[0]), data.T,1)[0]
-
-# hc_path = "L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\HealthyPatients\\test\\"
-# dataloader = DataLoader(data_path=hc_path+"data.npy", event_path=hc_path+"events.npy", isDoc=False, feature_window=53)
-# train_data, train_labels = dataloader.getFeatures()
-# print(train_data.shape)
-# print(train_labels.shape)
-# class DataLoader_Doc():
-#     def __init__(self, data_path: str) -> None:
-#         """
-#         """
-#         if (data_path == "" or data_path is None):
-#             print("Specify the path of the raw data and the labels.")
-#             return None
-        
-#         self.data = np.load(data_path) # patients X events X areas X samples -------> 29 X 24 X 4 X 295
-#         print(self.data.shape)
-#         self.features = None # patients X events X channels X features
-    
-#     def getFeatures(self):
-#         '''
-#         Get all the data in the form Patients X Events X Features. And the label/order of the events Patients X Labels.
-#         '''
-#         start = 0
-#         duration = 153
-#         end = 295
-#         features_physical = np.concatenate(self.extractFeatures(start, start+duration), axis=3)
-#         features_rest = np.concatenate(self.extractFeatures(start+duration, start+end), axis=3)
-#         self.features = features_physical - features_rest # Patients X Events X Areas X Features
-
-#         print(features_physical.shape)
-#         print(features_rest.shape)
-
-#         separetor = math.floor(self.features.shape[1]/2)
-#         self.features[:,separetor:,:] = -self.features[:,separetor:,:]
-#         labels = [0]*math.floor(self.features.shape[1]/2) + [1]*math.ceil(self.features.shape[1]/2)
-
-#         return self.features, np.expand_dims(np.array(labels), axis=1)
-    
-#     def extractFeatures(self, start, stop):
-#         feature_window = 53 # 5 sec
-#         # For the slope we need to do this for every patient seperately
-#         for id, patient in enumerate(self.data):
-#             # For every event
-#             for iid, event in enumerate(patient):
-#                 if iid == 0:
-#                     tmp = np.expand_dims(self.slopePerChannel(event[:,start:stop]), axis=0)
-#                 else:
-#                     tmp = np.concatenate((tmp, np.expand_dims(self.slopePerChannel(event[:,start:stop]), axis=0)), axis=0)
-            
-#             if id == 0:
-#                 slope = np.expand_dims(tmp, axis=0)
-#             else:
-#                 slope = np.concatenate((slope, np.expand_dims(tmp, axis=0)), axis=0)
-        
-#         return tuple(
-#                         (
-#                          np.expand_dims(slope, axis=3), 
-#                          np.expand_dims(np.mean(self.data[:,:,:,start:start+feature_window], axis=3), axis=3), 
-#                          np.expand_dims(np.mean(self.data[:,:,:,stop-feature_window:stop], axis=3), axis=3)
-#                         )
-#                     )
-    
-#     def slopePerChannel(self, data):
-#         '''
-#         data: n_channels X samples
-#         '''
-#         # Calculate slope for each event for each channel: events X channels X 1 (slope)
-#         return np.polyfit(np.arange(data.T.shape[0]), data.T,1)[0]

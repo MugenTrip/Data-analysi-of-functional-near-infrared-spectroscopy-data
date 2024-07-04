@@ -4,7 +4,9 @@ from sklearn.model_selection import StratifiedKFold
 from DataLoader import DataLoader
 from model_svm import model_SVM
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
-
+'''
+This file trains a classifier using the initial session of the healthy controls and the runs it on the DOC patients
+'''
 if __name__ == '__main__':
     hc_path = "L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\HealthyPatients\\data_initial\\"
     dataloader = DataLoader(data_path=hc_path+"data.npy", event_path=hc_path+"events.npy", isDoc=False)

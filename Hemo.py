@@ -4,7 +4,6 @@ import mne_nirs
 from itertools import compress
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-from myRaw import myRaw
 from sklearn.decomposition import PCA
 
 
@@ -41,16 +40,6 @@ class HemoData():
             self.data, self.shortChannels = self.removeShortChannels(raw)
             #self.data = raw
 
-        if usePCA:
-            self.data = self.pcaReduction()
-
-    def pcaReduction(self):
-        pca = PCA(n_components=2)
-        scaler = StandardScaler()
-        X = scaler.fit_transform(self.data.get_data(picks=["hbo"]))
-        X = pca.fit_transform(X.T)
-        myRawClass = myRaw(X.T, 2, self.data)
-        return myRawClass.getRaw()
 
     def loadData(self, path: str):
         """

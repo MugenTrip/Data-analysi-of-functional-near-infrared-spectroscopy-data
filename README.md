@@ -24,8 +24,8 @@ python train_validate.py -v cross_validation -t physical -c 02
 
 ## Train and validate individual level classifier
 
-To train and validate the individual level classifier use the doc_single_classifier.py script. 
+To train and validate the individual level classifier use the doc_single_classifier.py script. You can run it as: 
 
 ```
-python train_validate.py -v cross_validation -t physical -c 02
+python doc_single_classifier.py -s initial -c 02
 ```

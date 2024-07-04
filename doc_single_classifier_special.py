@@ -11,8 +11,16 @@ from sklearn import svm
 from sklearn.model_selection import StratifiedKFold, LeaveOneOut
 from statistics import mean, stdev
 import os
+import argparse
 
-
+parser = argparse.ArgumentParser()
+parser.add_argument("-c" , "--channels", type=list, 
+                    help="Define the channels you want to use like 0123 for all channels. (O: SMA, 1: Frontal, 2: Motor, 3: Parietal)", required=True)
+args = parser.parse_args()
+if args.channels is None:
+    channels = [0,1,2,3]
+else:
+    channels = [int(x) for x in args.channels]
 
 stimuli_duration = 153
 total_task_duration = 295
@@ -114,7 +122,7 @@ def getSpecialCaseFeature(file):
 
     #print(np.array(labels).shape)
     #print(features)
-    return features, labels
+    return features[:,channels,:], labels
 
 
 #####################################################################################################################

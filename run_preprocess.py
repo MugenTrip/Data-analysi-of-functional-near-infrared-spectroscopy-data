@@ -1,3 +1,4 @@
+import os
 import mne
 import numpy as np
 from Hemo import HemoData
@@ -8,9 +9,12 @@ import argparse
 
 MAX_LENGTH_HEALTHY = 1224
 MAX_LENGTH_DOC = 7756
-BASE_PATH = "L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\"
+BASE_PATH = os.path.join(os.path.curdir, 'data')
 
 def getName(file):
+       '''
+        Helping to get the name of an .snirf file.
+        '''
        return file.split("\\")[-1].replace(".snirf","") 
 
 def invertDic(dic: dict):
@@ -21,6 +25,12 @@ def invertDic(dic: dict):
         return inv_dic
 
 def preprocess(datapath: DataPath, max_length: int):
+    '''
+    Runs the preprocessing pipeline.
+    Args:
+        datapath (DataPath):    DataPath object which stores the path of the files.
+        max_length (int):       Lenght of single recording. For our paradimgs, it was 1224 for the healthy controls and 7756 for DOC patients.
+    '''
     for id,file in enumerate(datapath.getDataPaths()):
         raw_haemo = HemoData(file, preprocessing=True, isPloting=False).getMneIoRaw()
         raw_data = raw_haemo.get_data(picks=["hbo"]) # channels x samples
@@ -53,30 +63,28 @@ def preprocess(datapath: DataPath, max_length: int):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-d" , "--datatype", type=str, choices=["healthy", "icu", "doc"], help="Determine the data type, could be [healthy, icu, doc].", required=True)
-    parser.add_argument("-s", "--session", type=str, choices=["initial", "followup", "test"], help="Session, could be initial or followup.", required=True)
+    parser.add_argument("-s", "--session", type=str, choices=["initial", "followup"], help="Session, could be initial or followup.", required=True)
     args = parser.parse_args()
 
     path = None
     if args.datatype == "healthy":
-            path = BASE_PATH + "HealthyPatients\\"
+            path = os.path.join(BASE_PATH, 'healthy')
             max_length = MAX_LENGTH_HEALTHY
     elif args.datatype == "icu":
-            path = BASE_PATH + "ICUPatients\\"
+            path = os.path.join(BASE_PATH, 'icu')
             max_length = MAX_LENGTH_HEALTHY
     elif args.datatype == "doc":
-            path = BASE_PATH + "DoC\\"
+            path = os.path.join(BASE_PATH, 'doc')
             max_length = MAX_LENGTH_DOC
 
-    if args.session == "test":
-            path = path + "test\\"
     if args.session == "initial":
-            path = path + "data_initial\\"
-    if args.session == "followup":
-            path = path + "data_followup\\"
+            path = os.path.join(path, 'initial')
+    elif args.session == "followup":
+            path = os.path.join(path, 'followup')
 
     datapath = DataPath(path, recursive=False)
     data, labels, patient_map = preprocess(datapath, max_length)
-    np.save(path + "data", data)
-    np.save(path + "events", labels)
-    np.save(path + "map", patient_map)
+    np.save(os.path.join(path, 'data'), data)
+    np.save(os.path.join(path, 'events'), labels)
+    np.save(os.path.join(path, 'map'), patient_map)
     

@@ -1,12 +1,11 @@
 import argparse
+import os
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from DataLoader import DataLoader
 from model_svm import model_SVM
 
-
-BASE_PATH = "L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\ICUPatients\\"
-
+BASE_PATH = os.path.join(os.path.curdir, 'data/icu')
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-v" , "--validation", type=str, choices=["cross_validation", "icu_initial", "icu_followup", "healthy_followup"], 
@@ -21,11 +20,11 @@ if __name__ == '__main__':
     if args.validation == "cross_validation":
             pass
     elif args.validation == "icu_initial":
-            validation_path = BASE_PATH + "data_initial\\"
+            validation_path = os.path.join(BASE_PATH, 'initial')
     elif args.validation == "icu_followup":
-            validation_path = BASE_PATH + "data_followup\\"
+            validation_path = os.path.join(BASE_PATH, 'followup')
     elif args.validation == "healthy_followup":
-            validation_path = BASE_PATH.replace("ICU", "Healthy") + "data_followup\\"
+            validation_path = os.path.join(BASE_PATH.replace("icu", "healthy"), 'followup')
 
     if args.channels is None:
           channels = [0,1,2,3]
@@ -35,8 +34,8 @@ if __name__ == '__main__':
           channels = [int(x) for x in args.channels]
 
     
-    hc_path = "L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\HealthyPatients\\data_initial\\"
-    dataloader = DataLoader(data_path=hc_path+"data.npy", event_path=hc_path+"events.npy", isDoc=False)
+    hc_path = os.path.join(os.path.curdir, 'data/healthy/initial')
+    dataloader = DataLoader(data_path=os.path.join(hc_path, 'data.npy'), event_path=os.path.join(hc_path, 'events.npy'), isDoc=False)
     if args.task == "physical":
         train_data, train_labels = dataloader.getFeatures(channels=channels)
     else:
@@ -57,7 +56,7 @@ if __name__ == '__main__':
                 accuracy.append(my_model.train_validate(X_train, y_train, X_test, y_test))
             print(f"Accuracy list: {accuracy}, with mean: {np.mean(accuracy)}")
     else:
-        dataloader = DataLoader(data_path=validation_path+"data.npy", event_path=validation_path+"events.npy", isDoc=False)
+        dataloader = DataLoader(data_path=os.path.join(validation_path, 'data.npy'), event_path=os.path.join(validation_path, 'events.npy'), isDoc=False)
         if args.task == "physical":
             validate_data, validate_labels = dataloader.getFeatures(channels=channels)
         else:

@@ -2,6 +2,9 @@ import os
 from queue import LifoQueue
 
 class DataPath:
+    """
+    Class to finds and store all the paths of the snirf files.
+    """
     
     def __init__(self, baseline_path: str, fileType: str="snirf",  recursive: bool=True) -> None:
         self.stack = LifoQueue(maxsize=100)
@@ -19,6 +22,9 @@ class DataPath:
             self.getAllinOneDir()
     
     def getAllinOneDir(self):
+        '''
+        Search for .snirf files in directoty.
+        ''' 
         onlyfiles = self.get_immediate_files(self.baseline_path)
         for file in onlyfiles:
             if file.find("." + self.fileType) != -1: 
@@ -38,6 +44,9 @@ class DataPath:
         return None
     
     def recurrentDirSearch(self):
+        '''
+        Search recursively all subdirectories for an snirf file. Once it finds a file in a directory it stops looking for another at the same directory.
+        ''' 
         self.iter += 1 
         if self.stack.empty():
             return self.data_path
@@ -54,4 +63,7 @@ class DataPath:
             return self.recurrentDirSearch()
         
     def getDataPaths(self):
+        '''
+        Return a list wiht all the paths found.
+        '''
         return self.data_path

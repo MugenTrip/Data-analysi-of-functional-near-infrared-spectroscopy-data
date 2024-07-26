@@ -2,7 +2,7 @@ import os
 import sys
 import path
 directory = path.Path(__file__).abspath()
-sys.path.append(directory.parent.parent)
+sys.path.append(directory.parent.parent.parent)
 import mne
 import numpy as np
 from Hemo import HemoData
@@ -13,8 +13,8 @@ import argparse
 from itertools import compress
 
 
-path = "L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\HealthyPatients\\data_initial\\"
-datapath = DataPath(path, recursive=False)
+path_ = "L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\HealthyPatients\\data_initial\\"
+datapath = DataPath(path_, recursive=False)
 total = 0
 for id,file in enumerate(datapath.getDataPaths()):
     raw = mne.io.read_raw_snirf(file, optode_frame="mri")

@@ -34,5 +34,52 @@ python doc_single_classifier.py -s initial -c 02
 
 ### Group level figures
 
+The group level figures include one figure with the average "paired" features and one with the average time-series, across all participants of a participant group (heathy, icu, doc). You can run each script as follows:
+
+```
+python plots\mean_features_topo.py -d healthy -s initial -t physical
+```
+
+```
+python plots\mean_timeseries.py -d healthy -s initial
+```
+
+The -d argument could be [healthy, icu, doc] and defines the participant group, the -s argument refers to the session and it could be [initial, followup], and finally, the -t argument defines the task and it could be [physical, imagery].
+
 ### Individual level figures
+
+At the individual level, we can plot either the time-series of each individual or the average features across all trials of each individual. To generate those plots, run the following commands: 
+
+```
+python plots\features_topo_for_each_individual.py -d healthy -s initial -t physical
+```
+
+```
+python plots\timeseries_for_each_individual.py -d healthy -s initial
+```
+
+For the average time-series you will get the plot of each individual one by one.
+
+## T-test
+
+You can run a two tailed paired t-test to compare the stimuli period with the resting period using the following commands: 
+
+```
+python t-test\physical_paired_t_test.py -d healthy -s initial
+```
+
+```
+python t-test\imagery_paired_t_test.py -d healthy -s initial
+```
+The first one is for the physical task while the second one is for the imagery task.
+
+For the DOC patients, the commands are similar but they have only one argument (-s) which is the session ([initial, followup]). You can run the t-test in group level (first command) or in individual level (second command):
+
+```
+python t-test\t-test_doc_group_paired.py -s initial 
+```
+
+```
+python t-test\t-test_doc_individual.py -s initial 
+```
 

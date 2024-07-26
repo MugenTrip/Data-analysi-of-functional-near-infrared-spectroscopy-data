@@ -29,3 +29,10 @@ To train and validate the individual level classifier use the doc_single_classif
 ```
 python doc_single_classifier.py -s initial -c 02
 ```
+
+## Plots and Figures
+
+### Group level figures
+
+### Individual level figures
+

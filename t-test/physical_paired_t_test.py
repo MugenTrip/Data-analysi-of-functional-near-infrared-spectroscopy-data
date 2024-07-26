@@ -7,7 +7,7 @@ sys.path.append(directory.parent.parent)
 from DataLoader import DataLoader
 import argparse
 
-BASE_PATH = os.path.join(os.path.curdir, '..\data')
+BASE_PATH = os.path.join(os.path.curdir, 'data/')
 parser = argparse.ArgumentParser()
 parser.add_argument("-d" , "--datatype", type=str, choices=["healthy", "icu", "doc"], help="Determine the data type, could be [healthy, icu, doc].", required=True)
 parser.add_argument("-s", "--session", type=str, choices=["initial", "followup"], help="Session, could be initial or followup.", required=True)

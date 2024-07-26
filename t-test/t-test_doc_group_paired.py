@@ -7,14 +7,14 @@ sys.path.append(directory.parent.parent)
 from DataLoader import DataLoader
 import argparse
 
-doc_path = os.path.join(os.path.curdir, '..\data\doc')
+BASE_PATH = os.path.join(os.path.curdir, 'data/doc/')
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--session", type=str, choices=["initial", "followup"], help="Session, could be initial or followup.", required=True)
 args = parser.parse_args()
 if args.session == "initial":
-    doc_path = os.path.join(doc_path, 'initial')
+    doc_path = os.path.join(BASE_PATH, 'initial')
 elif args.session == "followup":
-    doc_path = os.path.join(doc_path, 'followup')
+    doc_path = os.path.join(BASE_PATH, 'followup')
 
 dataloader = DataLoader(data_path=os.path.join(doc_path, 'data.npy'), event_path=os.path.join(doc_path, 'events.npy'), isDoc=True, isPCA=False)
 stimuli_features, imagery_features = dataloader.getFeaturesImageryNoPCATtest()

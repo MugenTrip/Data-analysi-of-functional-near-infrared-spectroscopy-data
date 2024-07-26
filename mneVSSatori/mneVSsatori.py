@@ -1,8 +1,13 @@
 
+import path
+import sys
+directory = path.Path(__file__).abspath()
+sys.path.append(directory.parent.parent)
 from Hemo import HemoData
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from DataPath import DataPath
+
 
 # Loop over all files
 files_mne = DataPath("L:\\LovbeskyttetMapper\\CONNECT-ME\\DTU\\Alex_Data\\HealthyPatients\\data_initial\\", recursive=False).getDataPaths()

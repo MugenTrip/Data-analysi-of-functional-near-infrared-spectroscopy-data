@@ -83,3 +83,23 @@ python t-test\t-test_doc_group_paired.py -s initial
 python t-test\t-test_doc_individual.py -s initial 
 ```
 
+## DOC Special cases
+
+There were a few cases where the recording of the DOC patients was interrupted leading to recordings with fewer trials. To run the single level classifier for those cases use the command:
+
+```
+python doc_single_classifier_special.py -c 02 
+```
+
+Where the argument -c is about the channels/areas to be used (0: SMA, 1: Frontal, 2: Motor, 3: Parietal). 
+
+To run the plots you can use the commands:
+
+```
+python plots\doc_special_case_features_top.py
+```
+
+```
+python plots\doc_special_case_timeseries.py
+```
+
